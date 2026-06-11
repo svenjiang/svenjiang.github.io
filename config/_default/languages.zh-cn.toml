@@ -1,15 +1,15 @@
-disabled = false
+
 locale = "zh-cn"
 label = "简体中文"
 weight = 1
-title = "晟思录"
+title = "Sven.AI"
 
 [params]
   displayName = "简体中文"
   isoCode = "en"
   rtl = false
   dateFormat = "2006年1月2日"
-  # logo = "img/logo.png"
+  logo = "img/sven.png"
   # secondaryLogo = "img/secondary-logo.png"
   # description = "My awesome website"
   # copyright = "Copy, _right?_ :thinking_face:"
