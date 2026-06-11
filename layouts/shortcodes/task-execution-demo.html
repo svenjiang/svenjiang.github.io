@@ -1,0 +1,132 @@
+<div class="task-demo" style="font-family: system-ui, sans-serif; margin: 1.5rem 0;">
+<style>
+.task-demo .phase-nav { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+.task-demo .pn {
+  padding: 5px 12px; border-radius: 6px; font-size: 13px; cursor: pointer;
+  border: 1px solid #E5E7EB; background: transparent; color: #6B7280;
+}
+.task-demo .pn.active { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; font-weight: 500; }
+.task-demo .phase { display: none; }
+.task-demo .phase.active { display: block; }
+.task-demo .phase-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #111827; }
+.task-demo .phase-desc { font-size: 13px; color: #6B7280; line-height: 1.6; margin-bottom: 1rem; }
+.task-demo .trace-wrap { border: 1px solid #E5E7EB; border-radius: 8px; overflow: hidden; }
+.task-demo .trace-row { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #F3F4F6; }
+.task-demo .trace-row:last-child { border-bottom: none; }
+.task-demo .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  white-space: nowrap; min-width: 70px; text-align: center; flex-shrink: 0; margin-top: 2px; }
+.task-demo .b-plan { background: #F3F4F6; color: #374151; }
+.task-demo .b-action { background: #ECFDF5; color: #065F46; }
+.task-demo .b-obs { background: #FFFBEB; color: #78350F; }
+.task-demo .b-ask { background: #FFF1F2; color: #9F1239; }
+.task-demo .b-retry { background: #FFF7ED; color: #7C2D12; }
+.task-demo .b-done { background: #F0FDF4; color: #14532D; }
+.task-demo .trace-text { font-size: 13px; color: #374151; line-height: 1.55; }
+.task-demo .trace-text code { font-family: monospace; font-size: 12px;
+  background: #F3F4F6; padding: 1px 5px; border-radius: 3px; }
+.task-demo .insight { background: #EFF6FF; border-radius: 6px; padding: 10px 14px;
+  font-size: 13px; color: #1E40AF; line-height: 1.55; margin-top: 1rem; }
+@media (prefers-color-scheme: dark) {
+  .task-demo .pn { border-color: #374151; color: #9CA3AF; }
+  .task-demo .pn.active { background: #1E3A5F; color: #93C5FD; border-color: #1D4ED8; }
+  .task-demo .phase-title { color: #F9FAFB; }
+  .task-demo .phase-desc { color: #9CA3AF; }
+  .task-demo .trace-wrap { border-color: #374151; }
+  .task-demo .trace-row { border-color: #1F2937; }
+  .task-demo .trace-text { color: #E5E7EB; }
+  .task-demo .insight { background: #1E3A5F; color: #93C5FD; }
+}
+</style>
+
+<div class="phase-nav">
+  <button class="pn active" onclick="showPhase(this,'pd-p1','pd')">① 接收任务</button>
+  <button class="pn" onclick="showPhase(this,'pd-p2','pd')">② 复杂度判断</button>
+  <button class="pn" onclick="showPhase(this,'pd-p3','pd')">③ 任务分解</button>
+  <button class="pn" onclick="showPhase(this,'pd-p4','pd')">④ 并行执行</button>
+  <button class="pn" onclick="showPhase(this,'pd-p5','pd')">⑤ 遭遇歧义</button>
+  <button class="pn" onclick="showPhase(this,'pd-p6','pd')">⑥ 错误恢复</button>
+</div>
+
+<div id="pd-p1" class="phase active">
+  <div class="phase-title">用户任务输入</div>
+  <div class="phase-desc">用户给出了一个目标，没有任何其他说明。Agent 要做的第一件事，不是立刻动手，而是理解任务的边界。</div>
+  <div class="trace-wrap">
+    <div class="trace-row"><span class="badge b-plan">用户</span><span class="trace-text">帮我给这个项目加上 GitHub Actions CI，要求：push 时跑测试，main 分支合并时额外跑 lint 和构建。</span></div>
+    <div class="trace-row"><span class="badge b-plan">Thought</span><span class="trace-text">先读 CLAUDE.md 和 package.json，确认这个项目用什么测试框架、什么 lint 工具，有没有已有的 CI 配置。</span></div>
+    <div class="trace-row"><span class="badge b-action">Action</span><span class="trace-text"><code>Read CLAUDE.md</code>，<code>Read package.json</code>，<code>LS .github/</code></span></div>
+    <div class="trace-row"><span class="badge b-obs">Observation</span><span class="trace-text">测试：<code>vitest</code>，lint：<code>eslint</code>，构建：<code>tsc &amp;&amp; vite build</code>，无现有 CI 配置。</span></div>
+  </div>
+  <div class="insight">关键习惯：Agent 拿到任务后的第一个动作永远是"读"，而不是"写"。摸清环境，才能制定合理计划。</div>
+</div>
+
+<div id="pd-p2" class="phase">
+  <div class="phase-title">复杂度判断</div>
+  <div class="phase-desc">Agent 内部做了一次隐式的复杂度评估。这不是一个明确的"步骤"，而是 Thought 阶段推理的一部分。</div>
+  <div class="trace-wrap">
+    <div class="trace-row"><span class="badge b-plan">Thought</span><span class="trace-text">这个任务涉及：① 创建 workflow 目录结构；② 写 push 触发的测试 workflow；③ 写 main 分支专用的 lint+build workflow；④ 验证 YAML 语法；⑤ 检查 Node 版本。需要多步骤，属于中等复杂度任务，可以分解后并行处理。</span></div>
+    <div class="trace-row"><span class="badge b-action">Action</span><span class="trace-text"><code>Bash: node --version</code>（确认本地 Node 版本，CI 中要对齐）</span></div>
+    <div class="trace-row"><span class="badge b-obs">Observation</span><span class="trace-text">Node v20.11.0 → CI 中使用 <code>node-version: '20'</code></span></div>
+  </div>
+  <div class="insight">Agent 不会对"写一行注释"这种简单任务做分解——直接执行更快。只有当任务涉及多个独立组件、或需要多轮工具调用时，才值得花推理资源做规划。</div>
+</div>
+
+<div id="pd-p3" class="phase">
+  <div class="phase-title">任务分解</div>
+  <div class="phase-desc">Agent 把大任务拆成了三条独立的执行线索，每条线索可以作为子任务并行展开。</div>
+  <div class="trace-wrap">
+    <div class="trace-row"><span class="badge b-plan">Thought</span><span class="trace-text">可以并行处理：<br>• 子任务 A：创建目录 + 写 push-test.yml<br>• 子任务 B：写 main-ci.yml（lint + build）<br>• 子任务 C：读现有测试确认命令是否需要参数<br>三者无相互依赖，交给 Task 工具并发执行。</span></div>
+  </div>
+  <div class="insight">任务分解的本质：识别出"哪些步骤可以同时进行"。这跟写代码时识别并发机会是同一种思维。</div>
+</div>
+
+<div id="pd-p4" class="phase">
+  <div class="phase-title">并行执行（Task 工具）</div>
+  <div class="phase-desc">Agent 调用三个 Task 工具，将子任务委托给独立的 Agent 实例，主 Agent 等待所有结果返回后汇总。</div>
+  <div class="trace-wrap">
+    <div class="trace-row"><span class="badge b-action">Action</span><span class="trace-text"><code>Task A</code>：创建目录 + 写 push-test.yml（含 node setup、cache、vitest --run）</span></div>
+    <div class="trace-row"><span class="badge b-action">Action</span><span class="trace-text"><code>Task B</code>：写 main-ci.yml（on: push: branches: [main]，运行 eslint + tsc + vite build）</span></div>
+    <div class="trace-row"><span class="badge b-action">Action</span><span class="trace-text"><code>Task C</code>：读 vitest.config.ts，确认配置中是否有 reporter 或特殊参数</span></div>
+    <div class="trace-row"><span class="badge b-obs">Observation</span><span class="trace-text">三个 Task 均完成。Task C 发现 vitest.config.ts 里有 <code>reporter: 'verbose'</code>，需要加 <code>--reporter=verbose</code> 参数。</span></div>
+  </div>
+  <div class="insight">并行执行的收益：三个 Task 同时进行，总耗时约等于最慢的那个，而不是三者之和。</div>
+</div>
+
+<div id="pd-p5" class="phase">
+  <div class="phase-title">遭遇歧义 → 询问用户</div>
+  <div class="phase-desc">执行过程中 Agent 发现了一个无法自行决定的问题：用户说"push 时跑测试"，但没说是否包括 PR。</div>
+  <div class="trace-wrap">
+    <div class="trace-row"><span class="badge b-plan">Thought</span><span class="trace-text">"push 时跑测试"有三种理解：① 任何分支 push；② 仅主要分支；③ 包含 PR。三种语义对应不同触发器，后果不同。无法自行猜测，需澄清。</span></div>
+    <div class="trace-row"><span class="badge b-ask">询问用户</span><span class="trace-text">"push 时跑测试"——是所有分支 push 都触发，还是只限 main/dev，或者包含 PR？默认给你配"所有分支 push + PR"，但如果你想限制分支告诉我。</span></div>
+    <div class="trace-row"><span class="badge b-obs">用户回复</span><span class="trace-text">所有分支都跑，PR 也要触发。</span></div>
+    <div class="trace-row"><span class="badge b-action">Action</span><span class="trace-text">更新 push-test.yml：<code>on: [push, pull_request]</code>，不限制 branches。</span></div>
+  </div>
+  <div class="insight">宁可停下来问一句，也不自行猜测然后产生"不太对"的结果。</div>
+</div>
+
+<div id="pd-p6" class="phase">
+  <div class="phase-title">错误恢复</div>
+  <div class="phase-desc">写完配置后，Agent 尝试用 actionlint 验证 YAML 语法，结果报错。</div>
+  <div class="trace-wrap">
+    <div class="trace-row"><span class="badge b-action">Action</span><span class="trace-text"><code>Bash: npx actionlint .github/workflows/*.yml</code></span></div>
+    <div class="trace-row"><span class="badge b-obs">Observation</span><span class="trace-text">错误：<code>main-ci.yml:12: "runs-on" is required</code>——漏写了 runs-on 字段。</span></div>
+    <div class="trace-row"><span class="badge b-retry">错误恢复</span><span class="trace-text">Thought：这是语法错误，直接修复，不需要询问用户。</span></div>
+    <div class="trace-row"><span class="badge b-action">Action</span><span class="trace-text"><code>Edit main-ci.yml</code>：补上 <code>runs-on: ubuntu-latest</code></span></div>
+    <div class="trace-row"><span class="badge b-action">Action</span><span class="trace-text"><code>Bash: npx actionlint .github/workflows/*.yml</code>（再次验证）</span></div>
+    <div class="trace-row"><span class="badge b-done">完成</span><span class="trace-text">两个 workflow 文件均通过 actionlint 验证，向用户汇报完成。</span></div>
+  </div>
+  <div class="insight">语法错误、typo → 自行修复；影响用户资源或权限的决策 → 询问用户。</div>
+</div>
+
+<script>
+function showPhase(btn, targetId, prefix) {
+  document.querySelectorAll('[id^="' + prefix + '-"]').forEach(function(el) {
+    el.classList.remove('active');
+  });
+  btn.closest('.task-demo').querySelectorAll('.pn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  document.getElementById(targetId).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</div>
