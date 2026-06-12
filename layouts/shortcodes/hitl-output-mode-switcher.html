@@ -1,0 +1,154 @@
+<div class="hitl-mode-demo" style="font-family: system-ui, sans-serif; margin: 1.5rem 0;">
+<style>
+.hitl-mode-demo .tabs { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+.hitl-mode-demo .tab {
+  padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
+  border: 1px solid #E5E7EB; background: transparent; color: #6B7280; transition: all .15s;
+}
+.hitl-mode-demo .tab.active {
+  background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; font-weight: 500;
+}
+.hitl-mode-demo .tab:hover:not(.active) { background: #F9FAFB; color: #111827; }
+.hitl-mode-demo .mpanel { display: none; }
+.hitl-mode-demo .mpanel.active { display: block; }
+.hitl-mode-demo .mode-title {
+  font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 4px;
+}
+.hitl-mode-demo .mode-desc {
+  font-size: 13px; color: #6B7280; line-height: 1.6; margin-bottom: 1rem;
+}
+.hitl-mode-demo .flag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.75rem; }
+.hitl-mode-demo .flag {
+  font-family: monospace; font-size: 12px; background: #F3F4F6;
+  border: 1px solid #E5E7EB; border-radius: 4px; padding: 2px 8px; color: #374151;
+}
+.hitl-mode-demo .terminal {
+  background: #1a1a18; border-radius: 8px; padding: 1rem 1.25rem;
+  font-family: monospace; font-size: 12px; line-height: 1.7;
+}
+.hitl-mode-demo .t-prompt { color: #7EC8A4; }
+.hitl-mode-demo .t-cmd    { color: #E8E6E0; }
+.hitl-mode-demo .t-think  { color: #7A9ECC; }
+.hitl-mode-demo .t-tool   { color: #C4A95A; }
+.hitl-mode-demo .t-out    { color: #A8A49E; }
+.hitl-mode-demo .t-done   { color: #7EC8A4; }
+.hitl-mode-demo .t-meta   { color: #555552; font-size: 11px; }
+.hitl-mode-demo .diff-block {
+  margin: 4px 0; padding: 6px 8px;
+  border: 1px solid #3a3a38; border-radius: 4px;
+}
+.hitl-mode-demo .diff-add { color: #7EC8A4; }
+.hitl-mode-demo .diff-del { color: #E07070; }
+.hitl-mode-demo .diff-head { color: #888; font-size: 11px; margin-bottom: 4px; }
+.hitl-mode-demo .tip {
+  background: #EFF6FF; border-radius: 6px; padding: 10px 14px;
+  font-size: 13px; color: #1E40AF; line-height: 1.55; margin-top: 1rem;
+}
+@media (prefers-color-scheme: dark) {
+  .hitl-mode-demo .tab   { border-color: #374151; color: #9CA3AF; }
+  .hitl-mode-demo .tab.active { background: #1E3A5F; color: #93C5FD; border-color: #1D4ED8; }
+  .hitl-mode-demo .tab:hover:not(.active) { background: #1F2937; color: #F9FAFB; }
+  .hitl-mode-demo .mode-title { color: #F9FAFB; }
+  .hitl-mode-demo .mode-desc  { color: #9CA3AF; }
+  .hitl-mode-demo .flag { background: #374151; border-color: #4B5563; color: #E5E7EB; }
+  .hitl-mode-demo .tip  { background: #1E3A5F; color: #93C5FD; }
+}
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="hitlMode(this,'hitl-m1')">交互模式（默认）</button>
+  <button class="tab"        onclick="hitlMode(this,'hitl-m2')">详细模式（--verbose）</button>
+  <button class="tab"        onclick="hitlMode(this,'hitl-m3')">Headless / CI 模式</button>
+</div>
+
+<!-- Panel 1: Interactive -->
+<div id="hitl-m1" class="mpanel active">
+  <div class="mode-title">交互模式：精简输出 + 关键节点确认</div>
+  <div class="mode-desc">默认模式。Agent 流式输出思考和操作摘要，在需要用户决策的地方暂停等待输入。适合日常开发使用。</div>
+  <div class="terminal">
+    <div><span class="t-prompt">claude&gt;</span> <span class="t-cmd">fix the failing tests in src/auth/</span></div>
+    <div style="margin-top:8px"><span class="t-think">● Reading test output...</span></div>
+    <div><span class="t-think">● Found 2 failures in token.test.ts</span></div>
+    <div><span class="t-tool">● Edit src/auth/token.ts</span></div>
+    <div class="diff-block">
+      <div class="diff-head">diff preview</div>
+      <div class="diff-add">+ if (!token) throw new AppError('Missing token', 401)</div>
+      <div class="diff-del">- if (!token) return null</div>
+    </div>
+    <div style="margin-top:8px"><span style="color:#C4A95A">Apply this change? [y/n]</span> <span class="t-cmd">y</span></div>
+    <div><span class="t-done">✓ 2 tests passing</span></div>
+  </div>
+  <div class="tip">交互模式的核心体验：用户能看到 Agent 在"想什么"，并在每次文件变更前看到完整的 diff。确认粒度精确到每一次写入操作。</div>
+</div>
+
+<!-- Panel 2: Verbose -->
+<div id="hitl-m2" class="mpanel">
+  <div class="mode-title">详细模式：完整 Thought + Tool 调用链</div>
+  <div class="mode-desc">加上 <code style="font-family:monospace;font-size:12px;background:#F3F4F6;padding:1px 4px;border-radius:3px">--verbose</code> 标志后，输出每一轮 ReAct 循环的完整内容——包括 Thought 推理过程、工具参数、token 消耗。适合调试和学习 Agent 行为。</div>
+  <div class="flag-row">
+    <span class="flag">--verbose</span>
+    <span class="flag">-v</span>
+  </div>
+  <div class="terminal">
+    <div><span class="t-prompt">claude --verbose&gt;</span> <span class="t-cmd">fix the failing tests</span></div>
+    <div style="margin-top:8px" class="t-meta">── Turn 1 ──────────────────────────</div>
+    <div><span class="t-think">Thought: I need to first understand what tests are failing.</span></div>
+    <div><span class="t-think">&nbsp;&nbsp;Will run the test suite to get the error output.</span></div>
+    <div><span class="t-tool">Action: Bash</span></div>
+    <div class="t-out">&nbsp;&nbsp;command: "npm test -- --reporter=verbose 2&gt;&1 | tail -40"</div>
+    <div class="t-out">&nbsp;&nbsp;timeout: 30000</div>
+    <div style="margin-top:4px"><span class="t-out">Observation: [stdout 847 chars]</span></div>
+    <div class="t-out">&nbsp;&nbsp;FAIL src/auth/token.test.ts</div>
+    <div class="t-out">&nbsp;&nbsp;✗ should return 401 for missing token</div>
+    <div style="margin-top:6px" class="t-meta">── Turn 2 ──────────────────────────</div>
+    <div><span class="t-think">Thought: Error is in token.ts line 24. The function</span></div>
+    <div><span class="t-think">&nbsp;&nbsp;returns null instead of throwing. Fix with Edit.</span></div>
+    <div><span class="t-tool">Action: Edit</span></div>
+    <div class="t-out">&nbsp;&nbsp;file: "src/auth/token.ts"</div>
+    <div class="t-out">&nbsp;&nbsp;old: "if (!token) return null"</div>
+    <div class="t-out">&nbsp;&nbsp;new: "if (!token) throw new AppError('Missing token', 401)"</div>
+    <div style="margin-top:6px" class="t-meta">── Cost ────────────────────────────</div>
+    <div><span class="t-out">Input: 2,841 tokens · Output: 312 tokens · $0.0038</span></div>
+  </div>
+  <div class="tip">--verbose 是理解 Agent 决策的最佳工具。当 Agent 做出了你不理解的操作时，加上这个标志重跑，可以看到完整的推理链。也是优化 CLAUDE.md 内容的重要参考。</div>
+</div>
+
+<!-- Panel 3: CI/Headless -->
+<div id="hitl-m3" class="mpanel">
+  <div class="mode-title">Headless / CI 模式：非交互，结构化输出</div>
+  <div class="mode-desc">使用 <code style="font-family:monospace;font-size:12px;background:#F3F4F6;padding:1px 4px;border-radius:3px">--print</code> 标志（或 <code style="font-family:monospace;font-size:12px;background:#F3F4F6;padding:1px 4px;border-radius:3px">-p</code>）进入非交互模式。Agent 直接执行完整任务，将最终输出打印到 stdout，不等待任何用户输入。适合 CI/CD 流水线。</div>
+  <div class="flag-row">
+    <span class="flag">--print</span>
+    <span class="flag">-p</span>
+    <span class="flag">--output-format json</span>
+    <span class="flag">--dangerously-skip-permissions</span>
+  </div>
+  <div class="terminal">
+    <div class="t-meta"># GitHub Actions workflow</div>
+    <div style="margin-top:6px"><span class="t-tool">- name:</span> <span class="t-cmd">Claude Code Review</span></div>
+    <div><span class="t-out">&nbsp;&nbsp;run: |</span></div>
+    <div><span class="t-out">&nbsp;&nbsp;&nbsp;&nbsp;claude -p \</span></div>
+    <div><span class="t-out">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--output-format json \</span></div>
+    <div><span class="t-out">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Review the diff in $PR_DIFF,</span></div>
+    <div><span class="t-out">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; list any security issues" \</span></div>
+    <div><span class="t-out">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| jq '.result'</span></div>
+    <div style="margin-top:10px" class="t-meta"># stdout →</div>
+    <div style="margin-top:4px"><span class="t-out">{</span></div>
+    <div><span class="t-out">&nbsp;&nbsp;"result": "No security issues found. The diff...",</span></div>
+    <div><span class="t-out">&nbsp;&nbsp;"cost": { "input_tokens": 4102, "output_tokens": 89 },</span></div>
+    <div><span class="t-out">&nbsp;&nbsp;"session_id": "sess_01XYZ..."</span></div>
+    <div><span class="t-out">}</span></div>
+  </div>
+  <div class="tip">CI 模式的关键：<code style="font-family:monospace;font-size:12px;background:#DBEAFE;padding:1px 4px;border-radius:3px;color:#1E40AF">--output-format json</code> 让下游工具能程序化处理结果；<code style="font-family:monospace;font-size:12px;background:#DBEAFE;padding:1px 4px;border-radius:3px;color:#1E40AF">--dangerously-skip-permissions</code> 只在 CI 隔离环境里使用，配合 Docker 容器确保安全边界。</div>
+</div>
+
+<script>
+function hitlMode(btn, targetId) {
+  var demo = btn.closest('.hitl-mode-demo');
+  demo.querySelectorAll('.mpanel').forEach(function(p) { p.classList.remove('active'); });
+  demo.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById(targetId).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</div>
