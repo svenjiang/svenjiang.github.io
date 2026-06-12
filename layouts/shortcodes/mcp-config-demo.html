@@ -1,0 +1,227 @@
+<div class="mcp-demo" style="font-family: system-ui, sans-serif; margin: 1.5rem 0;">
+<style>
+.mcp-demo .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+.mcp-demo .tab {
+  padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
+  border: 1px solid #E5E7EB; background: transparent; color: #6B7280; transition: all .15s;
+}
+.mcp-demo .tab.active { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; font-weight: 500; }
+.mcp-demo .tab:hover:not(.active) { background: #F9FAFB; color: #111827; }
+.mcp-demo .panel { display: none; }
+.mcp-demo .panel.active { display: block; }
+.mcp-demo .p-title { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 4px; }
+.mcp-demo .p-desc  { font-size: 13px; color: #6B7280; line-height: 1.6; margin-bottom: 1rem; }
+.mcp-demo pre {
+  background: #1a1a18; border-radius: 8px; padding: 1rem 1.25rem;
+  font-family: monospace; font-size: 12px; line-height: 1.7; overflow-x: auto;
+  color: #A8A49E; margin: 0;
+}
+.mcp-demo .kw  { color: #7A9ECC; }
+.mcp-demo .str { color: #7EC8A4; }
+.mcp-demo .key { color: #C4A95A; }
+.mcp-demo .cmt { color: #555552; }
+.mcp-demo .tag-stdio { background: #FFFBEB; color: #78350F; border: 1px solid #FCD34D;
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.mcp-demo .tag-sse   { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE;
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.mcp-demo .tag-row { display: flex; gap: 8px; align-items: center; margin-bottom: 0.75rem; }
+.mcp-demo .trace { border: 1px solid #E5E7EB; border-radius: 8px; overflow: hidden; }
+.mcp-demo .tr { display: flex; gap: 10px; padding: 9px 14px;
+  border-bottom: 1px solid #F3F4F6; align-items: flex-start; }
+.mcp-demo .tr:last-child { border-bottom: none; }
+.mcp-demo .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  white-space: nowrap; min-width: 68px; text-align: center; flex-shrink: 0; margin-top: 2px; }
+.mcp-demo .b-think  { background: #EFF6FF; color: #1E40AF; }
+.mcp-demo .b-action { background: #ECFDF5; color: #065F46; }
+.mcp-demo .b-obs    { background: #FFFBEB; color: #78350F; }
+.mcp-demo .b-done   { background: #F0FDF4; color: #14532D; }
+.mcp-demo .tr-text { font-size: 13px; color: #374151; line-height: 1.55; }
+.mcp-demo .tr-text code {
+  font-family: monospace; font-size: 12px; background: #F3F4F6;
+  padding: 1px 5px; border-radius: 3px;
+}
+.mcp-demo .tip {
+  background: #EFF6FF; border-radius: 6px; padding: 10px 14px;
+  font-size: 13px; color: #1E40AF; line-height: 1.55; margin-top: 1rem;
+}
+@media (prefers-color-scheme: dark) {
+  .mcp-demo .tab   { border-color: #374151; color: #9CA3AF; }
+  .mcp-demo .tab.active { background: #1E3A5F; color: #93C5FD; border-color: #1D4ED8; }
+  .mcp-demo .tab:hover:not(.active) { background: #1F2937; color: #F9FAFB; }
+  .mcp-demo .p-title { color: #F9FAFB; }
+  .mcp-demo .p-desc  { color: #9CA3AF; }
+  .mcp-demo .tag-stdio { background: #422006; color: #FDE68A; border-color: #78350F; }
+  .mcp-demo .tag-sse   { background: #1E3A5F; color: #93C5FD; border-color: #1D4ED8; }
+  .mcp-demo .trace  { border-color: #374151; }
+  .mcp-demo .tr     { border-color: #1F2937; }
+  .mcp-demo .tr-text { color: #E5E7EB; }
+  .mcp-demo .tr-text code { background: #374151; }
+  .mcp-demo .tip    { background: #1E3A5F; color: #93C5FD; }
+  .mcp-demo .b-think  { background: #1E3A5F; color: #93C5FD; }
+  .mcp-demo .b-action { background: #022C22; color: #6EE7B7; }
+  .mcp-demo .b-obs    { background: #422006; color: #FDE68A; }
+  .mcp-demo .b-done   { background: #052E16; color: #86EFAC; }
+}
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="mcpShow(this,'mcp-p1')">stdio 本地配置</button>
+  <button class="tab"        onclick="mcpShow(this,'mcp-p2')">SSE 远程配置</button>
+  <button class="tab"        onclick="mcpShow(this,'mcp-p3')">调用示例：GitHub</button>
+  <button class="tab"        onclick="mcpShow(this,'mcp-p4')">调用示例：数据库</button>
+</div>
+
+<!-- Panel 1: stdio config -->
+<div id="mcp-p1" class="panel active">
+  <div class="p-title">stdio 传输：本地进程 MCP Server</div>
+  <div class="p-desc">MCP server 以子进程方式启动，通过标准输入输出通信。延迟低，适合本地工具。配置写入 <code style="font-family:monospace;font-size:12px">.claude/claude.json</code> 或 <code style="font-family:monospace;font-size:12px">~/.claude/claude.json</code>。</div>
+  <div class="tag-row"><span class="tag-stdio">stdio</span><span style="font-size:12px;color:#6B7280">本地子进程，低延迟</span></div>
+  <pre><span class="cmt">// .claude/claude.json（项目级，随 git 提交）</span>
+{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"filesystem"</span>: {
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [
+        <span class="str">"-y"</span>,
+        <span class="str">"@modelcontextprotocol/server-filesystem"</span>,
+        <span class="str">"/home/user/projects/myapp"</span>
+      ]
+    },
+    <span class="key">"sqlite"</span>: {
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-sqlite"</span>],
+      <span class="key">"env"</span>: {
+        <span class="key">"SQLITE_DB_PATH"</span>: <span class="str">"./data/app.db"</span>
+      }
+    },
+    <span class="key">"internal-api"</span>: {
+      <span class="key">"command"</span>: <span class="str">"node"</span>,
+      <span class="key">"args"</span>: [<span class="str">"./tools/mcp-server/dist/index.js"</span>],
+      <span class="key">"env"</span>: {
+        <span class="key">"API_TOKEN"</span>: <span class="str">"${INTERNAL_API_TOKEN}"</span>
+      }
+    }
+  }
+}</pre>
+  <div class="tip">环境变量用 <code style="font-family:monospace;font-size:12px;background:#DBEAFE;padding:1px 4px;border-radius:3px;color:#1E40AF">${VAR_NAME}</code> 语法引用系统环境变量，避免把敏感 token 硬编码进配置文件。</div>
+</div>
+
+<!-- Panel 2: SSE config -->
+<div id="mcp-p2" class="panel">
+  <div class="p-title">SSE 传输：远程 MCP Server</div>
+  <div class="p-desc">MCP server 作为独立 HTTP 服务运行，通过 Server-Sent Events 通信。适合团队共享的云端工具，或需要持久连接的远程服务。</div>
+  <div class="tag-row"><span class="tag-sse">SSE / HTTP</span><span style="font-size:12px;color:#6B7280">远程服务，支持团队共享</span></div>
+  <pre><span class="cmt">// ~/.claude/claude.json（用户全局，个人工具）</span>
+{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"github"</span>: {
+      <span class="key">"type"</span>: <span class="str">"url"</span>,
+      <span class="key">"url"</span>: <span class="str">"https://api.githubcopilot.com/mcp/v1"</span>,
+      <span class="key">"headers"</span>: {
+        <span class="key">"Authorization"</span>: <span class="str">"Bearer ${GITHUB_TOKEN}"</span>
+      }
+    },
+    <span class="key">"linear"</span>: {
+      <span class="key">"type"</span>: <span class="str">"url"</span>,
+      <span class="key">"url"</span>: <span class="str">"https://mcp.linear.app/sse"</span>,
+      <span class="key">"headers"</span>: {
+        <span class="key">"Authorization"</span>: <span class="str">"Bearer ${LINEAR_API_KEY}"</span>
+      }
+    },
+    <span class="key">"team-tools"</span>: {
+      <span class="key">"type"</span>: <span class="str">"url"</span>,
+      <span class="key">"url"</span>: <span class="str">"https://tools.company.internal/mcp/v1"</span>
+    }
+  }
+}</pre>
+  <div class="tip">远程 MCP server 适合团队场景：部署一个 server，全团队共享，无需每人本地安装和维护。结合企业级配置可以强制所有成员接入合规审计工具。</div>
+</div>
+
+<!-- Panel 3: GitHub invocation trace -->
+<div id="mcp-p3" class="panel">
+  <div class="p-title">调用示例：GitHub MCP Server</div>
+  <div class="p-desc">任务：查找本周新增的 open issues，按优先级整理成摘要报告。Agent 通过 GitHub MCP Server 完成，全程无需 Bash 调用 <code style="font-family:monospace;font-size:12px">gh</code> CLI。</div>
+  <div class="trace">
+    <div class="tr">
+      <span class="badge b-think">Thought</span>
+      <span class="tr-text">需要查本周 open issues。GitHub MCP Server 提供了 <code>list_issues</code> 工具，可以按创建时间过滤。</span>
+    </div>
+    <div class="tr">
+      <span class="badge b-action">Action</span>
+      <span class="tr-text">
+        <code>mcp:github → list_issues</code><br>
+        参数：<code>{"state": "open", "since": "2025-01-20", "per_page": 50}</code>
+      </span>
+    </div>
+    <div class="tr">
+      <span class="badge b-obs">Observation</span>
+      <span class="tr-text">返回 23 个 issues，包含标题、标签、assignee、创建时间。其中标记 <code>priority:high</code> 的有 5 个。</span>
+    </div>
+    <div class="tr">
+      <span class="badge b-think">Thought</span>
+      <span class="tr-text">高优先级 issue 需要补充评论数和最近活动，调用 <code>get_issue</code> 获取详情。</span>
+    </div>
+    <div class="tr">
+      <span class="badge b-action">Action</span>
+      <span class="tr-text">
+        <code>mcp:github → get_issue</code> × 5（并行，通过 Task 工具）<br>
+        获取每个高优先级 issue 的完整详情。
+      </span>
+    </div>
+    <div class="tr">
+      <span class="badge b-done">完成</span>
+      <span class="tr-text">整理成 Markdown 报告：高优先级 5 条（含责任人和截止时间）+ 普通 issue 18 条汇总。</span>
+    </div>
+  </div>
+  <div class="tip">MCP 工具调用与内置工具调用在 Agent 视角完全一致——都是 Action → Observation 的循环。Agent 不需要知道工具是内置的还是来自 MCP Server。</div>
+</div>
+
+<!-- Panel 4: Database invocation trace -->
+<div id="mcp-p4" class="panel">
+  <div class="p-title">调用示例：数据库 MCP Server</div>
+  <div class="p-desc">任务：分析过去 30 天用户注册趋势，找出异常下降的日期。Agent 通过 PostgreSQL MCP Server 直接查询，无需用户提供连接字符串。</div>
+  <div class="trace">
+    <div class="tr">
+      <span class="badge b-think">Thought</span>
+      <span class="tr-text">先了解数据库 schema，确认用户表的结构和时间字段名称，再写查询。</span>
+    </div>
+    <div class="tr">
+      <span class="badge b-action">Action</span>
+      <span class="tr-text">
+        <code>mcp:postgres → list_tables</code><br>
+        获取所有表名和列定义。
+      </span>
+    </div>
+    <div class="tr">
+      <span class="badge b-obs">Observation</span>
+      <span class="tr-text">找到 <code>users</code> 表，注册时间字段为 <code>created_at</code>（timestamp with time zone）。</span>
+    </div>
+    <div class="tr">
+      <span class="badge b-action">Action</span>
+      <span class="tr-text">
+        <code>mcp:postgres → execute_query</code><br>
+        <code>SELECT DATE(created_at), COUNT(*) FROM users WHERE created_at &gt; NOW() - INTERVAL '30 days' GROUP BY 1 ORDER BY 1</code>
+      </span>
+    </div>
+    <div class="tr">
+      <span class="badge b-obs">Observation</span>
+      <span class="tr-text">返回 30 行数据。发现 2025-01-15 注册量为 12，前后两天均在 150-200 之间，异常明显。</span>
+    </div>
+    <div class="tr">
+      <span class="badge b-done">完成</span>
+      <span class="tr-text">输出分析报告，标注 1 月 15 日异常（降幅 92%），建议检查当日部署记录和错误日志。</span>
+    </div>
+  </div>
+  <div class="tip">数据库 MCP Server 通常只开放 SELECT 权限，写操作需要额外配置和确认。这是"最小必要权限"在 MCP 层的具体体现——工具只暴露它实际需要的能力。</div>
+</div>
+
+<script>
+function mcpShow(btn, targetId) {
+  var demo = btn.closest('.mcp-demo');
+  demo.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  demo.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById(targetId).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</div>
