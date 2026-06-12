@@ -1,6 +1,6 @@
 +++
 date = '2026-05-01T09:43:46+08:00'
-draft = true
+draft = false
 title = 'Claude Code 深度讲解（五）：安全与权限控制'
 categories = ["AI 工程"]
 tags = ["Claude Code", "安全与权限控制"]
