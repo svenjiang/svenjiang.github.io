@@ -1,9 +1,9 @@
 +++
 date = '2026-05-29T08:41:13+08:00'
 draft = false
-title = 'Claude Code 深度讲解（九）：评估与可观测性'
+title = 'Claude Code 深度讲解（九）：评估观测'
 categories = ["AI 工程"]
-tags = ["Claude Code", "评估与可观测性"]
+tags = ["Claude Code"]
 series = ["Claude Code 深度讲解"] 
 +++
 

@@ -1,13 +1,13 @@
 +++
 date = '2026-05-01T09:43:46+08:00'
 draft = false
-title = 'Claude Code 深度讲解（五）：安全与权限控制'
+title = 'Claude Code 深度讲解（五）：安全权限'
 categories = ["AI 工程"]
-tags = ["Claude Code", "安全与权限控制"]
+tags = ["Claude Code"]
 series = ["Claude Code 深度讲解"] 
 +++
 
-## 给 Agent 真实权限，又不让它"失控"
+# 给 Agent 真实权限，又不让它"失控"
 
 Claude Code 选择了一条有争议的路：直接操作真实系统，而非沙箱隔离。这背后有一套完整的安全设计——Permission System、沙箱集成、Prompt 注入防御，以及敏感数据保护。
 

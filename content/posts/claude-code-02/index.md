@@ -1,13 +1,14 @@
 +++
 date = '2026-04-10T11:14:39+08:00'
 draft = false
-title = 'Claude Code 深度讲解（二）：Agent 核心架构'
+title = 'Claude Code 深度讲解（二）：核心架构'
 categories = ["AI 工程"]
-tags = ["Claude Code", "Agent 核心架构"]
+tags = ["Claude Code"]
 series = ["Claude Code 深度讲解"] 
 +++
+# Agent 在内部是怎么"思考和行动"的？
 
-> 拆开 Claude Code 的引擎盖，看清 ReAct 循环、工具系统、上下文窗口管理三层机制如何协同工作。
+拆开 Claude Code 的引擎盖，看清 ReAct 循环、工具系统、上下文窗口管理三层机制如何协同工作。
 
 ## 2.1 ReAct 循环：Agent 的心跳
 

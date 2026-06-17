@@ -1,13 +1,14 @@
 +++
 date = '2026-04-03T17:17:03+08:00'
 draft = false
-title = 'Claude Code 深度讲解（一）：背景与设计哲学'
+title = 'Claude Code 深度讲解（一）：设计哲学'
 categories = ["AI 工程"]
-tags = ["Claude Code", "Agent 设计哲学"]
+tags = ["Claude Code"]
 series = ["Claude Code 深度讲解"] 
 +++
+# 为什么 Claude Code 要这样设计？
 
-> 从 Copilot 式补全到真正的 Agent——一次关于"让 AI 真正干活"的深度思考。
+从 Copilot 式补全到真正的 Agent——一次关于"让 AI 真正干活"的深度思考。
 
 ## 1.1 为什么需要 Coding Agent？
 

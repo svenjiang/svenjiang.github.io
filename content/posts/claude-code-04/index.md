@@ -1,13 +1,14 @@
 +++
 date = '2026-04-24T14:51:25+08:00'
 draft = false
-title = 'Claude Code 深度讲解（四）：任务规划与执行'
+title = 'Claude Code 深度讲解（四）：任务规划'
 categories = ["AI 工程"]
-tags = ["Claude Code", "任务规划"]
+tags = ["Claude Code"]
 series = ["Claude Code 深度讲解"] 
 +++
+# Agent 如何把一个模糊目标变成可执行的行动？
 
-> 从任务分解、并行执行，到遭遇歧义时的决策逻辑、错误后的恢复机制——规划能力是 Agent 与"聪明的补全"之间最本质的分野。
+从任务分解、并行执行，到遭遇歧义时的决策逻辑、错误后的恢复机制——规划能力是 Agent 与"聪明的补全"之间最本质的分野。
 
 ## 任务规划与执行流程图
 

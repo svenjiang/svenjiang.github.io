@@ -1,9 +1,9 @@
 +++
 date = '2026-05-15T14:55:06+08:00'
 draft = false
-title = 'Claude Code 深度讲解（七）：MCP 生态与扩展性'
+title = 'Claude Code 深度讲解（七）：MCP 生态'
 categories = ["AI 工程"]
-tags = ["Claude Code", "MCP"]
+tags = ["Claude Code"]
 series = ["Claude Code 深度讲解"] 
 +++
 # 工具标准化：MCP 如何让 Agent 连接一切

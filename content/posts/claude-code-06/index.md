@@ -1,9 +1,9 @@
 +++
 date = '2026-05-08T14:35:38+08:00'
 draft = false
-title = 'Claude Code 深度讲解（六）：Human in the Loop 设计'
+title = 'Claude Code 深度讲解（六）：人机协作'
 categories = ["AI 工程"]
-tags = ["Claude Code", "Human-in-the-Loop"]
+tags = ["Claude Code"]
 series = ["Claude Code 深度讲解"] 
 +++
 # Agent 在何时、以何种方式把控制权交还给你？

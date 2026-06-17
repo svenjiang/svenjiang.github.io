@@ -1,12 +1,14 @@
 +++
 date = '2026-04-17T11:21:11+08:00'
 draft = false
-title = 'Claude Code 深度讲解（三）：代码库理解能力'
+title = 'Claude Code 深度讲解（三）：代码库理解'
 categories = ["AI 工程"]
-tags = ["Claude Code", "代码理解"]
+tags = ["Claude Code"]
 series = ["Claude Code 深度讲解"] 
 +++
-> 从 CLAUDE.md 的记忆设计，到"按需拉取"的探索策略，再到多语言适配的工程逻辑——Agent 理解代码库靠的不是蛮力，而是经验。
+# Agent 是怎么在陌生代码库里找到方向的？
+
+从 CLAUDE.md 的记忆设计，到"按需拉取"的探索策略，再到多语言适配的工程逻辑——Agent 理解代码库靠的不是蛮力，而是经验。
 
 ## 3.1 CLAUDE.md：Agent 的"项目记忆"
 

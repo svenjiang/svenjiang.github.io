@@ -1,0 +1,147 @@
+<div style="overflow-x: auto; margin: 1.5rem 0;">
+<svg width="100%" viewBox="0 0 680 440" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Claude Code 局限与改进路线图</title>
+  <desc>左侧列出五个已知系统性局限（目标漂移、大型代码库、跨文件一致性、压缩损失、Prompt 注入），右侧对应三个改进层次（架构层、工程实践层、生态平台层），中间用箭头连接，底部标注时间维度（近期/中期/长期）。</desc>
+  <defs>
+    <marker id="rd-arrow" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="currentColor"
+            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .rd-th { font-family: system-ui,sans-serif; font-size: 13px; font-weight: 500; }
+      .rd-ts { font-family: system-ui,sans-serif; font-size: 11px; }
+      .rd-label { font-family: system-ui,sans-serif; font-size: 11px; font-weight: 600; }
+      .rd-foot  { font-family: system-ui,sans-serif; font-size: 11px; }
+
+      /* limitation boxes */
+      .lim { fill: #FAECE7; stroke: #D85A30; stroke-width: 0.5; }
+      .lim-t { fill: #712B13; }
+      .lim-s { fill: #993C1D; }
+
+      /* improvement clusters */
+      .imp-arch   { fill: #EEEDFE; stroke: #7F77DD; stroke-width: 0.5; }
+      .imp-eng    { fill: #E1F5EE; stroke: #1D9E75; stroke-width: 0.5; }
+      .imp-eco    { fill: #E6F1FB; stroke: #378ADD; stroke-width: 0.5; }
+      .imp-arch-t { fill: #3C3489; } .imp-arch-s { fill: #534AB7; }
+      .imp-eng-t  { fill: #085041; } .imp-eng-s  { fill: #0F6E56; }
+      .imp-eco-t  { fill: #0C447C; } .imp-eco-s  { fill: #185FA5; }
+
+      /* timeline badges */
+      .tl-near { fill: #EAF3DE; } .tl-near-t { fill: #27500A; }
+      .tl-mid  { fill: #FAEEDA; } .tl-mid-t  { fill: #633806; }
+      .tl-long { fill: #EEEDFE; } .tl-long-t { fill: #3C3489; }
+
+      .conn { stroke: #B4B2A9; stroke-width: 0.8; fill: none; }
+      .col-head { font-family: system-ui,sans-serif; font-size: 12px; font-weight: 600; }
+      .col-head-lim  { fill: #712B13; }
+      .col-head-imp  { fill: #3C3489; }
+      .foot-text { fill: #888780; }
+
+      @media (prefers-color-scheme: dark) {
+        .lim { fill: #4A1B0C; stroke: #D85A30; }
+        .lim-t { fill: #F5C4B3; } .lim-s { fill: #F0997B; }
+        .imp-arch { fill: #26215C; stroke: #7F77DD; }
+        .imp-eng  { fill: #04342C; stroke: #1D9E75; }
+        .imp-eco  { fill: #042C53; stroke: #378ADD; }
+        .imp-arch-t { fill: #CECBF6; } .imp-arch-s { fill: #AFA9EC; }
+        .imp-eng-t  { fill: #9FE1CB; } .imp-eng-s  { fill: #5DCAA5; }
+        .imp-eco-t  { fill: #B5D4F4; } .imp-eco-s  { fill: #85B7EB; }
+        .tl-near { fill: #052E16; } .tl-near-t { fill: #86EFAC; }
+        .tl-mid  { fill: #422006; } .tl-mid-t  { fill: #FDE68A; }
+        .tl-long { fill: #1E1B4B; } .tl-long-t { fill: #A5B4FC; }
+        .conn { stroke: #4B5563; }
+        .col-head-lim { fill: #F0997B; }
+        .col-head-imp { fill: #CECBF6; }
+        .foot-text { fill: #6B7280; }
+      }
+    </style>
+  </defs>
+
+  <!-- Column headers -->
+  <text x="150" y="16" text-anchor="middle" class="col-head col-head-lim">已知局限</text>
+  <text x="510" y="16" text-anchor="middle" class="col-head col-head-imp">改进方向</text>
+
+  <!-- ── Left: 5 limitations ── -->
+  <!-- L1 目标漂移 -->
+  <rect x="20" y="28" width="258" height="44" rx="8" class="lim"/>
+  <text x="44" y="46" dominant-baseline="central" class="rd-th lim-t">目标漂移</text>
+  <text x="44" y="62" dominant-baseline="central" class="rd-ts lim-s">长任务中逐渐偏离原始目标</text>
+
+  <!-- L2 大型代码库 -->
+  <rect x="20" y="82" width="258" height="44" rx="8" class="lim"/>
+  <text x="44" y="100" dominant-baseline="central" class="rd-th lim-t">大型代码库理解上限</text>
+  <text x="44" y="116" dominant-baseline="central" class="rd-ts lim-s">500+ 文件时理解质量下降</text>
+
+  <!-- L3 跨文件一致性 -->
+  <rect x="20" y="136" width="258" height="44" rx="8" class="lim"/>
+  <text x="44" y="154" dominant-baseline="central" class="rd-th lim-t">跨文件重构一致性</text>
+  <text x="44" y="170" dominant-baseline="central" class="rd-ts lim-s">多文件修改容易遗漏或不一致</text>
+
+  <!-- L4 压缩损失 -->
+  <rect x="20" y="190" width="258" height="44" rx="8" class="lim"/>
+  <text x="44" y="208" dominant-baseline="central" class="rd-th lim-t">上下文压缩信息损失</text>
+  <text x="44" y="224" dominant-baseline="central" class="rd-ts lim-s">关键中间信息被有损摘要</text>
+
+  <!-- L5 Prompt 注入 -->
+  <rect x="20" y="244" width="258" height="44" rx="8" class="lim"/>
+  <text x="44" y="262" dominant-baseline="central" class="rd-th lim-t">Prompt Injection 脆弱性</text>
+  <text x="44" y="278" dominant-baseline="central" class="rd-ts lim-s">精心设计的注入仍可能绕过防御</text>
+
+  <!-- ── Right: 3 improvement clusters ── -->
+  <!-- Architecture -->
+  <rect x="400" y="28" width="258" height="98" rx="10" class="imp-arch"/>
+  <text x="424" y="52" dominant-baseline="central" class="rd-th imp-arch-t">架构层改进</text>
+  <text x="424" y="70" dominant-baseline="central" class="rd-ts imp-arch-s">持久化长期记忆 / 知识图谱</text>
+  <text x="424" y="86" dominant-baseline="central" class="rd-ts imp-arch-s">显式两阶段规划（计划→执行）</text>
+  <text x="424" y="102" dominant-baseline="central" class="rd-ts imp-arch-s">Agent 间 peer-to-peer 协作</text>
+  <rect x="560" y="34" width="56" height="18" rx="4" class="tl-long"/>
+  <text x="588" y="43" text-anchor="middle" dominant-baseline="central" class="rd-label tl-long-t">长期</text>
+
+  <!-- Engineering -->
+  <rect x="400" y="140" width="258" height="84" rx="10" class="imp-eng"/>
+  <text x="424" y="162" dominant-baseline="central" class="rd-th imp-eng-t">工程实践改进</text>
+  <text x="424" y="180" dominant-baseline="central" class="rd-ts imp-eng-s">增量式代码库索引</text>
+  <text x="424" y="196" dominant-baseline="central" class="rd-ts imp-eng-s">智能选择性压缩保留高价值信息</text>
+  <text x="424" y="212" dominant-baseline="central" class="rd-ts imp-eng-s">测试驱动的 Agent 工作流</text>
+  <rect x="560" y="146" width="56" height="18" rx="4" class="tl-mid"/>
+  <text x="588" y="155" text-anchor="middle" dominant-baseline="central" class="rd-label tl-mid-t">中期</text>
+
+  <!-- Ecosystem -->
+  <rect x="400" y="238" width="258" height="84" rx="10" class="imp-eco"/>
+  <text x="424" y="260" dominant-baseline="central" class="rd-th imp-eco-t">生态与平台改进</text>
+  <text x="424" y="278" dominant-baseline="central" class="rd-ts imp-eco-s">企业级审计与合规集成</text>
+  <text x="424" y="294" dominant-baseline="central" class="rd-ts imp-eco-s">团队共享 MCP Server 生态</text>
+  <text x="424" y="310" dominant-baseline="central" class="rd-ts imp-eco-s">IDE 深度集成与 CLI 互补</text>
+  <rect x="560" y="244" width="56" height="18" rx="4" class="tl-near"/>
+  <text x="588" y="253" text-anchor="middle" dominant-baseline="central" class="rd-label tl-near-t">近期</text>
+
+  <!-- Connector lines (limitations → improvements) -->
+  <!-- L1,L2 → Architecture -->
+  <path d="M278 50 Q340 50 398 77" class="conn" marker-end="url(#rd-arrow)"/>
+  <path d="M278 104 Q340 90 398 90" class="conn" marker-end="url(#rd-arrow)"/>
+  <!-- L3,L4 → Engineering -->
+  <path d="M278 158 Q340 175 398 182" class="conn" marker-end="url(#rd-arrow)"/>
+  <path d="M278 212 Q340 210 398 196" class="conn" marker-end="url(#rd-arrow)"/>
+  <!-- L5 → Ecosystem -->
+  <path d="M278 266 Q340 266 398 266" class="conn" marker-end="url(#rd-arrow)"/>
+
+  <!-- Timeline axis at bottom -->
+  <line x1="30" y1="380" x2="640" y2="380" class="conn"/>
+  <text x="100" y="398" text-anchor="middle" class="rd-foot foot-text">现在</text>
+  <text x="340" y="398" text-anchor="middle" class="rd-foot foot-text">6–18 个月</text>
+  <text x="580" y="398" text-anchor="middle" class="rd-foot foot-text">2 年以上</text>
+  <circle cx="100" cy="380" r="3" fill="#B4B2A9"/>
+  <circle cx="340" cy="380" r="3" fill="#B4B2A9"/>
+  <circle cx="580" cy="380" r="3" fill="#B4B2A9"/>
+
+  <!-- Timeline badges legend -->
+  <rect x="30"  y="412" width="52" height="18" rx="4" class="tl-near"/>
+  <text x="56"  y="421" text-anchor="middle" dominant-baseline="central" class="rd-label tl-near-t">近期</text>
+  <rect x="96"  y="412" width="52" height="18" rx="4" class="tl-mid"/>
+  <text x="122" y="421" text-anchor="middle" dominant-baseline="central" class="rd-label tl-mid-t">中期</text>
+  <rect x="162" y="412" width="52" height="18" rx="4" class="tl-long"/>
+  <text x="188" y="421" text-anchor="middle" dominant-baseline="central" class="rd-label tl-long-t">长期</text>
+  <text x="230" y="421" dominant-baseline="central" class="rd-foot foot-text">预计演进时间线（仅供参考，实际进展视技术突破而定）</text>
+</svg>
+</div>

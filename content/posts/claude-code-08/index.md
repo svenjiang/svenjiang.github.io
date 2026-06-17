@@ -1,9 +1,9 @@
 +++
 date = '2026-05-22T14:25:25+08:00'
 draft = false
-title = 'Claude Code 深度讲解（八）：记忆与知识管理'
+title = 'Claude Code 深度讲解（八）：记忆管理'
 categories = ["AI 工程"]
-tags = ["Claude Code", "记忆与知识管理"]
+tags = ["Claude Code"]
 series = ["Claude Code 深度讲解"] 
 +++
 
