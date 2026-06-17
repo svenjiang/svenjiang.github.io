@@ -1,0 +1,254 @@
+<div class="obs-demo" style="font-family: system-ui, sans-serif; margin: 1.5rem 0;">
+<style>
+.obs-demo .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+.obs-demo .tab {
+  padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
+  border: 1px solid #E5E7EB; background: transparent; color: #6B7280; transition: all .15s;
+}
+.obs-demo .tab.active { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; font-weight: 500; }
+.obs-demo .tab:hover:not(.active) { background: #F9FAFB; color: #111827; }
+.obs-demo .panel { display: none; }
+.obs-demo .panel.active { display: block; }
+.obs-demo .p-title { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 4px; }
+.obs-demo .p-desc  { font-size: 13px; color: #6B7280; line-height: 1.6; margin-bottom: 1rem; }
+.obs-demo pre {
+  background: #1a1a18; border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto;
+  font-family: monospace; font-size: 12px; line-height: 1.7; color: #A8A49E; margin: 0 0 1rem;
+}
+.obs-demo .k  { color: #7A9ECC; }
+.obs-demo .s  { color: #7EC8A4; }
+.obs-demo .c  { color: #555552; }
+.obs-demo .w  { color: #C4A95A; }
+.obs-demo .ok { color: #7EC8A4; }
+.obs-demo .err { color: #E07070; }
+.obs-demo .num { color: #CE9178; }
+
+.obs-demo .prop-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 1rem;
+}
+.obs-demo .prop-card {
+  background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; padding: 10px 12px;
+}
+.obs-demo .prop-label { font-size: 11px; font-weight: 600; color: #9CA3AF;
+  text-transform: uppercase; letter-spacing: .04em; margin-bottom: 3px; }
+.obs-demo .prop-val { font-size: 13px; color: #374151; }
+
+.obs-demo .metric-row {
+  display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap;
+}
+.obs-demo .metric {
+  flex: 1; min-width: 100px; background: #F9FAFB; border: 1px solid #E5E7EB;
+  border-radius: 8px; padding: 12px 14px; text-align: center;
+}
+.obs-demo .metric-num { font-size: 22px; font-weight: 600; color: #1D4ED8; line-height: 1; }
+.obs-demo .metric-label { font-size: 11px; color: #9CA3AF; margin-top: 4px; }
+
+.obs-demo .tip {
+  background: #EFF6FF; border-radius: 6px; padding: 10px 14px;
+  font-size: 13px; color: #1E40AF; line-height: 1.55;
+}
+.obs-demo .tip-warn {
+  background: #FFFBEB; border-radius: 6px; padding: 10px 14px;
+  font-size: 13px; color: #78350F; line-height: 1.55;
+}
+
+@media (prefers-color-scheme: dark) {
+  .obs-demo .tab { border-color: #374151; color: #9CA3AF; }
+  .obs-demo .tab.active { background: #1E3A5F; color: #93C5FD; border-color: #1D4ED8; }
+  .obs-demo .tab:hover:not(.active) { background: #1F2937; color: #F9FAFB; }
+  .obs-demo .p-title { color: #F9FAFB; }
+  .obs-demo .p-desc  { color: #9CA3AF; }
+  .obs-demo .prop-card  { background: #1F2937; border-color: #374151; }
+  .obs-demo .prop-label { color: #6B7280; }
+  .obs-demo .prop-val   { color: #E5E7EB; }
+  .obs-demo .metric { background: #1F2937; border-color: #374151; }
+  .obs-demo .metric-num { color: #93C5FD; }
+  .obs-demo .metric-label { color: #6B7280; }
+  .obs-demo .tip      { background: #1E3A5F; color: #93C5FD; }
+  .obs-demo .tip-warn { background: #422006; color: #FDE68A; }
+}
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="obsShow(this,'obs-p1')">--verbose 轨迹</button>
+  <button class="tab"        onclick="obsShow(this,'obs-p2')">Token 消耗分析</button>
+  <button class="tab"        onclick="obsShow(this,'obs-p3')">JSON 输出 / CI 监控</button>
+  <button class="tab"        onclick="obsShow(this,'obs-p4')">Golden Dataset</button>
+</div>
+
+<!-- Panel 1: verbose trace -->
+<div id="obs-p1" class="panel active">
+  <div class="p-title">--verbose：看清 Agent 每一步的推理</div>
+  <div class="p-desc">完整模式下，每一轮 Thought-Action-Observation 都会打印出来，包括推理文本、工具参数和 token 统计。当 Agent 做出意外决策时，这里能找到原因。</div>
+<pre><span class="c">$ claude --verbose "fix the failing tests in src/auth/"</span>
+
+<span class="c">── Turn 1 ─────────────────────────────────────────────</span>
+<span class="k">Thought:</span> I need to understand what tests are failing first.
+         Let me run the test suite to get the error output.
+         I'll use --reporter=verbose to see individual test names.
+
+<span class="k">Action:</span>  Bash
+  command: <span class="s">"npm test -- --reporter=verbose 2&gt;&1 | tail -40"</span>
+  timeout: 30000
+
+<span class="k">Observation:</span> [1,247 chars]
+  FAIL src/auth/token.test.ts
+  <span class="err">✗ should return 401 when token is missing (23ms)</span>
+  <span class="err">✗ should reject expired tokens (18ms)</span>
+  <span class="ok">✓ should accept valid tokens (12ms)</span>
+  Tokens this turn — input: <span class="num">1,204</span>  output: <span class="num">89</span>
+
+<span class="c">── Turn 2 ─────────────────────────────────────────────</span>
+<span class="k">Thought:</span> Two failures in token.test.ts. Both relate to error
+         handling — returning null instead of throwing. Let me
+         read the source file to locate the exact lines.
+
+<span class="k">Action:</span>  Read
+  file: <span class="s">"src/auth/token.ts"</span>
+
+<span class="k">Observation:</span> [2,103 chars, file content]
+  Tokens this turn — input: <span class="num">3,847</span>  output: <span class="num">112</span>
+
+<span class="c">── Turn 3 ─────────────────────────────────────────────</span>
+<span class="k">Thought:</span> Found it. Line 24: `if (!token) return null`
+         should be `throw new AppError('Missing token', 401)`.
+         Line 31 has the same pattern for expired tokens.
+         I'll use Edit with two replacements.
+
+<span class="k">Action:</span>  Edit  src/auth/token.ts
+<span class="err">-  if (!token) return null</span>
+<span class="ok">+  if (!token) throw new AppError('Missing token', 401)</span>
+  Tokens this turn — input: <span class="num">4,102</span>  output: <span class="num">203</span>
+
+<span class="c">── Session Summary ─────────────────────────────────────</span>
+  Turns: <span class="num">5</span>  |  Total input: <span class="num">12,847</span>  |  Output: <span class="num">1,203</span>  |  Cost: ~<span class="w">$0.087</span></pre>
+  <div class="tip">看 Thought 文本是诊断问题的核心。如果 Agent 在第 2 轮就有了错误的前提（比如误判了框架版本），后续所有操作都会基于错误假设。--verbose 让你能在最早的地方发现偏差。</div>
+</div>
+
+<!-- Panel 2: token analysis -->
+<div id="obs-p2" class="panel">
+  <div class="p-title">Token 消耗分析：找出效率瓶颈</div>
+  <div class="p-desc">同样是"修复测试"任务，下面展示两种执行的 token 消耗对比——一种高效，一种低效。差距来自于上下文加载策略的不同。</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem">
+    <div>
+      <div style="font-size:12px;font-weight:600;color:#14532D;margin-bottom:6px">✓ 高效执行（8 轮）</div>
+      <div class="metric-row" style="margin-bottom:8px">
+        <div class="metric"><div class="metric-num" style="color:#14532D">12K</div><div class="metric-label">Input tokens</div></div>
+        <div class="metric"><div class="metric-num" style="color:#14532D">1.2K</div><div class="metric-label">Output tokens</div></div>
+        <div class="metric"><div class="metric-num" style="color:#14532D">$0.09</div><div class="metric-label">费用估算</div></div>
+      </div>
+      <div style="font-size:12px;color:#6B7280;line-height:1.6">
+        策略：先运行测试定位错误，精准读取目标文件，直接修复，验证通过。
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;font-weight:600;color:#9F1239;margin-bottom:6px">✗ 低效执行（31 轮）</div>
+      <div class="metric-row" style="margin-bottom:8px">
+        <div class="metric"><div class="metric-num" style="color:#9F1239">67K</div><div class="metric-label">Input tokens</div></div>
+        <div class="metric"><div class="metric-num" style="color:#9F1239">4.8K</div><div class="metric-label">Output tokens</div></div>
+        <div class="metric"><div class="metric-num" style="color:#9F1239">$0.51</div><div class="metric-label">费用估算</div></div>
+      </div>
+      <div style="font-size:12px;color:#6B7280;line-height:1.6">
+        问题：先读取 src/ 下所有 23 个文件，逐文件搜索，多次重复读取同一文件，重试了失败的修复方案。
+      </div>
+    </div>
+  </div>
+<pre><span class="c"># 高效 vs 低效的关键差异</span>
+
+<span class="c"># 高效：先定位，后读取</span>
+<span class="ok">Turn 1: Bash npm test → 获得失败文件名</span>
+<span class="ok">Turn 2: Read src/auth/token.ts → 精准读取</span>
+<span class="ok">Turn 3: Edit → 修复</span>
+<span class="ok">Turn 4: Bash npm test → 验证</span>
+
+<span class="c"># 低效：先读取，后思考</span>
+<span class="err">Turn 1-23: Read src/auth/token.ts, Read src/auth/session.ts,</span>
+<span class="err">           Read src/auth/middleware.ts ... （读完所有文件）</span>
+<span class="err">Turn 24: Bash npm test → 才开始运行测试</span>
+<span class="err">Turn 25-31: 反复修改，反复失败</span></pre>
+  <div class="tip-warn">高 token 消耗通常是信号，而不是正常现象。触发因素：① CLAUDE.md 缺失，Agent 需要自己探索项目结构；② prompt 不够精确，Agent 需要读更多文件来确认边界；③ Agent 陷入了错误方向的循环。</div>
+</div>
+
+<!-- Panel 3: JSON output / CI monitoring -->
+<div id="obs-p3" class="panel">
+  <div class="p-title">JSON 输出与 CI 监控：程序化捕获执行数据</div>
+  <div class="p-desc"><code style="font-family:monospace;font-size:12px;background:#F3F4F6;padding:1px 4px;border-radius:3px">--output-format json</code> 让每次 Claude Code 执行都输出结构化数据，可以被监控系统捕获和分析。</div>
+<pre><span class="c"># GitHub Actions：捕获执行数据并写入监控</span>
+- name: <span class="s">Run Claude Code + Capture Metrics</span>
+  run: |
+    RESULT=$(claude -p \
+      --output-format json \
+      --dangerously-skip-permissions \
+      <span class="s">"$TASK_PROMPT"</span>)
+
+    <span class="c"># 提取关键指标</span>
+    INPUT_TOKENS=$(echo $RESULT | jq <span class="s">'.cost.input_tokens'</span>)
+    TURNS=$(echo $RESULT | jq <span class="s">'.num_turns'</span>)
+    DURATION=$(echo $RESULT | jq <span class="s">'.duration_ms'</span>)
+
+    <span class="c"># 写入监控（示例：InfluxDB）</span>
+    curl -X POST <span class="s">"$INFLUX_URL/write"</span> \
+      --data <span class="s">"claude_code,task=$TASK_TYPE \
+        input_tokens=$INPUT_TOKENS,turns=$TURNS,duration=$DURATION"</span>
+
+    <span class="c"># 输出给下游步骤</span>
+    echo $RESULT | jq <span class="s">'.result'</span></pre>
+<pre><span class="c">// JSON 输出结构</span>
+{
+  <span class="k">"result"</span>:    <span class="s">"Fixed 2 failing tests in src/auth/token.ts"</span>,
+  <span class="k">"cost"</span>: {
+    <span class="k">"input_tokens"</span>:       <span class="num">12847</span>,
+    <span class="k">"output_tokens"</span>:       <span class="num">1203</span>,
+    <span class="k">"cache_read_tokens"</span>:   <span class="num">8420</span>
+  },
+  <span class="k">"duration_ms"</span>:  <span class="num">34521</span>,
+  <span class="k">"session_id"</span>:   <span class="s">"sess_01XYZ"</span>,
+  <span class="k">"num_turns"</span>:    <span class="num">8</span>
+}</pre>
+  <div class="tip">把 <code style="font-family:monospace;font-size:12px;background:#DBEAFE;padding:1px 4px;border-radius:3px;color:#1E40AF">num_turns</code> 和 <code style="font-family:monospace;font-size:12px;background:#DBEAFE;padding:1px 4px;border-radius:3px;color:#1E40AF">input_tokens</code> 的长期趋势写入 Grafana，当某类任务的 turns 突然从 8 升到 25，通常意味着 CLAUDE.md 过时了，或者代码库结构发生了 Agent 没有感知到的变化。</div>
+</div>
+
+<!-- Panel 4: Golden dataset -->
+<div id="obs-p4" class="panel">
+  <div class="p-title">Golden Dataset：系统化回归测试</div>
+  <div class="p-desc">精心设计一批"黄金测试任务"，包含明确的验收标准。每次配置变更后跑一遍，对比新旧结果，防止退化。</div>
+<pre><span class="c">golden_dataset/
+├── task_001_fix_null_pointer/
+│   ├── setup.sh          <span class="c"># 准备初始代码状态</span>
+│   ├── prompt.txt        <span class="c"># 任务描述</span>
+│   ├── validate.sh       <span class="c"># 验收脚本</span>
+│   └── baseline.json     <span class="c"># 历史基准（turns、tokens）</span>
+├── task_002_add_endpoint/
+└── task_003_refactor/</span></pre>
+<pre><span class="c">#!/bin/bash
+# validate.sh — 语义验证，不比较文本</span>
+
+<span class="c"># 1. 功能正确性</span>
+npm test -- --reporter=json | jq <span class="s">'.numFailedTests == 0'</span>
+
+<span class="c"># 2. 无新增 lint 错误</span>
+eslint src/ --format json | jq <span class="s">'.[].errorCount == 0'</span>
+
+<span class="c"># 3. 改动范围符合预期</span>
+git diff --name-only | grep -v <span class="s">"^src/auth/"</span> | wc -l | \
+  xargs -I{} test {} -eq 0
+
+<span class="c"># 4. 效率指标不超出阈值</span>
+TURNS=$(cat result.json | jq <span class="s">'.num_turns'</span>)
+test $TURNS -le 15  <span class="c"># 超过 15 轮视为效率退化</span>
+
+echo <span class="s">"All validations passed"</span></pre>
+  <div class="tip">Golden dataset 的价值在于"可重复对比"。单次跑通不代表什么；但如果上次 12 轮完成的任务这次需要 28 轮，而且 tokens 增加了 3 倍，说明某些地方发生了退化——可能是 CLAUDE.md 被改坏了，也可能是代码库结构改变导致 Agent 需要更多探索。</div>
+</div>
+
+<script>
+function obsShow(btn, targetId) {
+  var demo = btn.closest('.obs-demo');
+  demo.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  demo.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById(targetId).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</div>

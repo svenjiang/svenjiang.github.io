@@ -1,0 +1,118 @@
+<div style="overflow-x: auto; margin: 1.5rem 0;">
+<svg width="100%" viewBox="0 0 680 380" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Agent 评估框架图</title>
+  <desc>三层评估维度：顶层为结果正确性（测试通过率、构建、Lint），中层为轨迹质量（工具调用效率、不必要操作、安全性），底层为效率与成本（Token 消耗、挂钟时间、调用次数）。右侧标注自动化程度：从可完全自动化到需人工判断。</desc>
+  <defs>
+    <style>
+      .ev-th { font-family: system-ui,sans-serif; font-size: 14px; font-weight: 500; }
+      .ev-ts { font-family: system-ui,sans-serif; font-size: 12px; }
+      .ev-tag { font-family: system-ui,sans-serif; font-size: 11px; font-weight: 600; }
+      .ev-axis { font-family: system-ui,sans-serif; font-size: 11px; }
+
+      .b-green  { fill: #E1F5EE; stroke: #1D9E75; stroke-width: 0.5; }
+      .b-blue   { fill: #E6F1FB; stroke: #378ADD; stroke-width: 0.5; }
+      .b-purple { fill: #EEEDFE; stroke: #7F77DD; stroke-width: 0.5; }
+      .b-gray   { fill: #F1EFE8; stroke: #B4B2A9; stroke-width: 0.5; }
+      .b-amber  { fill: #FAEEDA; stroke: #BA7517; stroke-width: 0.5; }
+      .b-coral  { fill: #FAECE7; stroke: #D85A30; stroke-width: 0.5; }
+
+      .t-green  { fill: #085041; } .ts-green  { fill: #0F6E56; }
+      .t-blue   { fill: #0C447C; } .ts-blue   { fill: #185FA5; }
+      .t-purple { fill: #3C3489; } .ts-purple { fill: #534AB7; }
+      .t-gray   { fill: #444441; } .ts-gray   { fill: #5F5E5A; }
+      .t-amber  { fill: #633806; } .ts-amber  { fill: #854F0B; }
+
+      .tag-auto { fill: #EAF3DE; } .tag-auto-t { fill: #27500A; }
+      .tag-semi { fill: #FAEEDA; } .tag-semi-t { fill: #633806; }
+      .tag-human { fill: #FCEBEB; } .tag-human-t { fill: #791F1F; }
+
+      .conn { stroke: #B4B2A9; stroke-width: 0.8; fill: none; }
+      .axis-line { stroke: #B4B2A9; stroke-width: 1; fill: none; }
+      .dim-label { fill: #888780; }
+
+      @media (prefers-color-scheme: dark) {
+        .b-green  { fill: #04342C; stroke: #1D9E75; }
+        .b-blue   { fill: #042C53; stroke: #378ADD; }
+        .b-purple { fill: #26215C; stroke: #7F77DD; }
+        .b-gray   { fill: #2C2C2A; stroke: #5F5E5A; }
+        .b-amber  { fill: #412402; stroke: #BA7517; }
+        .b-coral  { fill: #4A1B0C; stroke: #D85A30; }
+        .t-green  { fill: #9FE1CB; } .ts-green  { fill: #5DCAA5; }
+        .t-blue   { fill: #B5D4F4; } .ts-blue   { fill: #85B7EB; }
+        .t-purple { fill: #CECBF6; } .ts-purple { fill: #AFA9EC; }
+        .t-gray   { fill: #D3D1C7; } .ts-gray   { fill: #B4B2A9; }
+        .t-amber  { fill: #FAC775; } .ts-amber  { fill: #EF9F27; }
+        .tag-auto  { fill: #052E16; } .tag-auto-t  { fill: #86EFAC; }
+        .tag-semi  { fill: #422006; } .tag-semi-t  { fill: #FDE68A; }
+        .tag-human { fill: #4C0519; } .tag-human-t { fill: #FCA5A5; }
+        .conn { stroke: #4B5563; }
+        .axis-line { stroke: #4B5563; }
+        .dim-label { fill: #6B7280; }
+      }
+    </style>
+    <marker id="ev-arrow" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#B4B2A9"
+            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- ── Dimension 1: Result Correctness ── -->
+  <rect x="30" y="20" width="540" height="90" rx="12" class="b-green"/>
+  <text x="56" y="50" dominant-baseline="central" class="ev-th t-green">维度一：结果正确性</text>
+  <text x="56" y="68" dominant-baseline="central" class="ev-ts ts-green">最终产物是否符合预期</text>
+  <!-- sub items -->
+  <rect x="180" y="32" width="90" height="24" rx="5" class="b-gray"/>
+  <text x="225" y="44" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">测试通过率</text>
+  <rect x="280" y="32" width="90" height="24" rx="5" class="b-gray"/>
+  <text x="325" y="44" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">构建成功率</text>
+  <rect x="380" y="32" width="90" height="24" rx="5" class="b-gray"/>
+  <text x="425" y="44" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">Lint 通过率</text>
+  <rect x="480" y="32" width="72" height="24" rx="5" class="b-amber"/>
+  <text x="516" y="44" text-anchor="middle" dominant-baseline="central" class="ev-ts t-amber">代码质量</text>
+  <!-- auto badge -->
+  <rect x="180" y="64" width="56" height="18" rx="4" class="tag-auto"/>
+  <text x="208" y="73" text-anchor="middle" dominant-baseline="central" class="ev-tag tag-auto-t">可自动化</text>
+  <rect x="480" y="64" width="72" height="18" rx="4" class="tag-human"/>
+  <text x="516" y="73" text-anchor="middle" dominant-baseline="central" class="ev-tag tag-human-t">需人工判断</text>
+
+  <!-- ── Dimension 2: Trajectory Quality ── -->
+  <rect x="30" y="130" width="540" height="90" rx="12" class="b-blue"/>
+  <text x="56" y="160" dominant-baseline="central" class="ev-th t-blue">维度二：轨迹质量</text>
+  <text x="56" y="178" dominant-baseline="central" class="ev-ts ts-blue">从起点到终点走的路对不对</text>
+  <rect x="230" y="142" width="100" height="24" rx="5" class="b-gray"/>
+  <text x="280" y="154" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">工具调用效率</text>
+  <rect x="340" y="142" width="100" height="24" rx="5" class="b-gray"/>
+  <text x="390" y="154" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">不必要的操作</text>
+  <rect x="450" y="142" width="100" height="24" rx="5" class="b-gray"/>
+  <text x="500" y="154" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">安全性合规</text>
+  <rect x="230" y="174" width="56" height="18" rx="4" class="tag-semi"/>
+  <text x="258" y="183" text-anchor="middle" dominant-baseline="central" class="ev-tag tag-semi-t">半自动化</text>
+
+  <!-- ── Dimension 3: Efficiency ── -->
+  <rect x="30" y="240" width="540" height="90" rx="12" class="b-purple"/>
+  <text x="56" y="270" dominant-baseline="central" class="ev-th t-purple">维度三：效率与成本</text>
+  <text x="56" y="288" dominant-baseline="central" class="ev-ts ts-purple">消耗了多少资源</text>
+  <rect x="200" y="252" width="86" height="24" rx="5" class="b-gray"/>
+  <text x="243" y="264" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">Token 消耗</text>
+  <rect x="296" y="252" width="86" height="24" rx="5" class="b-gray"/>
+  <text x="339" y="264" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">挂钟时间</text>
+  <rect x="392" y="252" width="86" height="24" rx="5" class="b-gray"/>
+  <text x="435" y="264" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">调用次数</text>
+  <rect x="488" y="252" width="64" height="24" rx="5" class="b-gray"/>
+  <text x="520" y="264" text-anchor="middle" dominant-baseline="central" class="ev-ts t-gray">压缩次数</text>
+  <rect x="200" y="284" width="56" height="18" rx="4" class="tag-auto"/>
+  <text x="228" y="293" text-anchor="middle" dominant-baseline="central" class="ev-tag tag-auto-t">可自动化</text>
+
+  <!-- ── Right: SWE-bench note ── -->
+  <rect x="590" y="20" width="80" height="310" rx="10" class="b-amber"/>
+  <text x="630" y="80" text-anchor="middle" dominant-baseline="central"
+        class="ev-th t-amber" transform="rotate(90,630,80)">SWE-bench</text>
+  <text x="630" y="200" text-anchor="middle" dominant-baseline="central"
+        class="ev-ts ts-amber" transform="rotate(90,630,200)">仅覆盖维度一（Python 项目）</text>
+
+  <!-- Footer -->
+  <text x="300" y="365" text-anchor="middle" dominant-baseline="central"
+        class="ev-axis dim-label">完整评估需三个维度结合，单一指标均有盲区</text>
+</svg>
+</div>
